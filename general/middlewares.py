@@ -14,8 +14,6 @@ class RequestMiddleware:
     # the view (and later middleware) are called.
     self.thread_local.current_request = request
     response = self.get_response(request)
-
-    print(request.user.is_authenticated)
     # Code to be executed for each request/response after
     # the view is called.
 

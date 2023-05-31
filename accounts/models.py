@@ -1,14 +1,8 @@
 import uuid
 
 from django.db import models
-from django.http.request import HttpRequest
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractUser, BaseUserManager, Group
-
-from general.models import BaseModel
-from general.encryptions import encrypt
-from general.middlewares import RequestMiddleware
-from general.functions import random_password,get_auto_id,generate_unique_id
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 class CustomUserManager(BaseUserManager):
