@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from accounts.models import User
+from accounts.models import User, Order
 
 
 @admin.register(User)
@@ -24,3 +24,9 @@ class UserAdmin(admin.ModelAdmin):
 
     temp_delete.short_description = 'Delete temporarily'
     undo_delete.short_description = 'Undo delete'
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ["recipient","id","amount","date_added","is_paid","payment_id"]
+    ordering = ["-date_added"]
