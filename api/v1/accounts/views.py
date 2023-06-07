@@ -61,13 +61,11 @@ def pay(request: HttpRequest):
     user_id = request.POST.get('user_id')
     amount = request.POST.get('amount')
 
-    print(request.POST)
-
     if User.objects.filter(id=user_id,is_deleted=False).exists():
         user: User = User.objects.filter(id=user_id,is_deleted=False).latest("date_joined")
 
         payment = client.order.create({
-            "amount": int(amount) * 100,
+            "amount": float(amount) * 100,
             "currency": "INR",
             "payment_capture": "1",
         })
@@ -116,19 +114,31 @@ def payment_verification(request: HttpRequest):
 
         check = client.utility.verify_payment_signature(data)
 
-        print(check)
-
         if check:
-            order.is_paid = True
-            order.save()
-            
-            response_data = {
-                "statusCode": 6000,
-                "data":{
-                    "title":"Success",
-                    "message":"payment success"
+            payment = client.payment.fetch(razorpay_payment_id)
+
+            order_amount = order.amount
+            recieved_amount = float(payment.get("amount")) / 100
+
+            if float(order_amount) == recieved_amount:
+                order.is_paid = True
+                order.save()
+                
+                response_data = {
+                    "statusCode": 6000,
+                    "data":{
+                        "title":"Success",
+                        "message":"payment success"
+                    }
                 }
-            }
+            else:
+                response_data = {
+                    "statusCode": 6001,
+                    "data":{
+                        "title":"Failed",
+                        "message":"payment amount mismatch"
+                    }
+                }
         else:
             response_data = {
                 "statusCode": 6001,
